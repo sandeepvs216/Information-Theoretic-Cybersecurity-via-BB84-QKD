@@ -41,7 +41,7 @@ Software
   - Qiskit: A. Javadi-Abhari et al., 'Quantum computing with Qiskit', arXiv:2405.08810 (2024). Apache 2.0.
   - NumPy: C. R. Harris et al., Nature 585, 357 (2020).
   - Matplotlib: J. D. Hunter, Comput. Sci. Eng. 9, 90 (2007).
-  No external code template or notebook was copied. The code and slides were written for this submission with AI assistance (Claude, Anthropic).
+ 
 """
 from __future__ import annotations
 
