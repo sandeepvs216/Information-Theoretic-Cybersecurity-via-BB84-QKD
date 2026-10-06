@@ -1,0 +1,7 @@
+scheme,type,security_basis,public_key_bytes,ciphertext_bytes,quantum_attack,hardware,key_rate,network_scaling
+RSA-2048,classical,integer factoring,256,256,broken by Shor,any CPU,"software, ms per exchange",any IP network
+X25519 (ECDH),classical,elliptic-curve discrete log,32,32,broken by Shor,any CPU,"software, well under 1 ms",any IP network
+ML-KEM-512,post-quantum (NIST FIPS 203),module-LWE lattices,800,768,none known,any CPU,"software, well under 1 ms",any IP network
+ML-KEM-768,post-quantum (NIST FIPS 203),module-LWE lattices,1184,1088,none known,any CPU,"software, well under 1 ms",any IP network
+ML-KEM-1024,post-quantum (NIST FIPS 203),module-LWE lattices,1568,1568,none known,any CPU,"software, well under 1 ms",any IP network
+BB84 QKD,quantum,quantum mechanics (information-theoretic),0,0,secure in principle; needs authenticated classical channel,"single-photon source and detectors, dedicated fibre or free-space link",falls exponentially with fibre loss,"point-to-point, trusted nodes or repeaters beyond a few hundred km"
