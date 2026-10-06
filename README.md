@@ -6,7 +6,7 @@ Author: Sandeep S (Team Lead)
 
 ## Problem statement
 
-Simulate the complete BB84 protocol between Arjun and Bhavna in the presence of an eavesdropper
+Simulate the complete BB84 protocol between Arjun and Bhavesh in the presence of an eavesdropper
 (Esha) and a noisy channel, extract a verified secret key with classical post-processing, measure
 how much information leaks, and compare QKD with NIST post-quantum key exchange (ML-KEM / Kyber).
 
@@ -21,7 +21,7 @@ Every round is a two-qubit Qiskit circuit run on the `StatevectorSampler` primit
 | Channel noise | Depolarising noise (random X, Y or Z gate), photon loss, detector bit-flips |
 | Intercept-resend attack | Esha measures in a random basis and re-prepares the state she saw |
 | Entangling probe attack | Esha couples an ancilla with `CNOT` (or a weaker `CRY`) and reads it in Z |
-| Measurement and sifting | Bhavna measures in a random basis; rounds with matching bases are kept |
+| Measurement and sifting | Bhavesh measures in a random basis; rounds with matching bases are kept |
 | Parameter estimation | QBER on a sacrificed random sample; abort above 11 % (Shor-Preskill) |
 | Error correction | Cascade: block parities, binary search and back-tracking; leak is counted |
 | Privacy amplification | Toeplitz-matrix hashing to the final key length |
@@ -50,7 +50,7 @@ Outputs are written to `results_bb84/`: `bb84_sweeps.csv`, `bb84_analysis.png`, 
 
 | Scenario (4096 qubits) | QBER | Delta I | Outcome |
 |---|---|---|---|
-| 2 % depolarising noise, no Esha | 1.2 % (sample) | +0.89 | 1127-bit secret key, Arjun and Bhavna match |
+| 2 % depolarising noise, no Esha | 1.2 % (sample) | +0.89 | 1127-bit secret key, Arjun and Bhavesh match |
 | Full intercept-resend | 24.8 % (sifted key) | -0.33 | Abort, no key |
 | Esha attacks 20 % of qubits | about 4.5 % | +0.64 | Key of about 520 to 550 bits |
 
@@ -98,4 +98,4 @@ ML-KEM is not executed or benchmarked in this repository; its figures are the pu
 
 ### Templates and acknowledgements
 
-No external code template or notebook was copied. Part of the code  was written for this submission with AI assistance (Claude, Anthropic).
+No external code template or notebook was copied. The code and slides were written for this submission with AI assistance (Claude, Anthropic).

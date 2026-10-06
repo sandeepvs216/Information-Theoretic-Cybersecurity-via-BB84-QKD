@@ -8,7 +8,7 @@ BB84 Quantum Key Distribution -- end-to-end simulation and post-processing with 
   2. Channel + Esha       : depolarising noise, photon loss and detector (readout) errors;
                            Esha can run an intercept-resend attack or an entangling
                            ancilla-probe (CNOT) attack on any fraction of the qubits.
-  3. Measurement/sifting : Bhavna measures in random bases; public basis reconciliation.
+  3. Measurement/sifting : Bhavesh measures in random bases; public basis reconciliation.
   4. Parameter estimation: QBER on a sacrificed sample; abort above 11 % (Shor-Preskill).
   5. Error correction    : Cascade (block parities + binary search), leak is counted.
   6. Privacy amplification: Toeplitz-matrix hashing to the final secret key.
@@ -70,12 +70,12 @@ def bb84_round_circuit(bit, basis, probe, err_x, err_z, meas_basis, probe_angle=
       Arjun  : X if bit == 1, then H if basis == X          -> |0>, |1>, |+>, |->
       Esha    : optional probe, CNOT(signal -> ancilla)      (CRY(angle) for a weaker probe)
       Channel: Pauli error X, Z or Y (depolarising noise)
-      Bhavna    : H if measuring in the X basis, then measure
+      Bhavesh    : H if measuring in the X basis, then measure
       Esha    : measures her ancilla in Z (after the bases are announced)
     """
     q = QuantumRegister(2, "q")
-    bhavna, esha = ClassicalRegister(1, "bhavna"), ClassicalRegister(1, "esha")
-    qc = QuantumCircuit(q, bhavna, esha)
+    bhavesh, esha = ClassicalRegister(1, "bhavesh"), ClassicalRegister(1, "esha")
+    qc = QuantumCircuit(q, bhavesh, esha)
     if bit:
         qc.x(0)
     if basis == X_BASIS:
@@ -95,7 +95,7 @@ def bb84_round_circuit(bit, basis, probe, err_x, err_z, meas_basis, probe_angle=
         qc.z(0)
     if meas_basis == X_BASIS:
         qc.h(0)
-    qc.measure(q[0], bhavna[0])
+    qc.measure(q[0], bhavesh[0])
     qc.measure(q[1], esha[0])
     return qc
 
@@ -126,7 +126,7 @@ class QuantumLink:
         self.circuits_run += len(pubs)
         for g, res in enumerate(results):
             idx = np.flatnonzero(inverse == g)
-            rx = np.asarray(res.data.bhavna.array).reshape(-1) & 1
+            rx = np.asarray(res.data.bhavesh.array).reshape(-1) & 1
             anc = np.asarray(res.data.esha.array).reshape(-1) & 1
             order = self.rng.permutation(len(idx))  # shots are i.i.d.; assign them at random
             out_rx[idx], out_anc[idx] = rx[order], anc[order]
@@ -140,7 +140,7 @@ def depolarising_errors(n, p, rng):
 
 
 def transmit(n, noise, loss, readout, attack, esha_fraction, link, rng):
-    """Arjun -> (Esha) -> noisy channel -> Bhavna. Returns a dict of per-round records."""
+    """Arjun -> (Esha) -> noisy channel -> Bhavesh. Returns a dict of per-round records."""
     a_bits, a_bases = rng.integers(0, 2, n), rng.integers(0, 2, n)
     b_bases = rng.integers(0, 2, n)
     attacked = (rng.random(n) < esha_fraction) if attack != "none" else np.zeros(n, dtype=bool)
@@ -229,16 +229,16 @@ def cascade(a_key, b_key, qber, rng, passes=6):
     Cascade error correction. Each pass shuffles the key, compares block parities over the
     public channel and binary-searches every block whose parity differs. Correcting a bit
     flips the parity of the blocks that contained it in earlier passes, so those blocks are
-    searched again (the "cascade" step). Returns Bhavna's corrected key and the number of
+    searched again (the "cascade" step). Returns Bhavesh's corrected key and the number of
     parity bits disclosed.
     """
     n = len(a_key)
-    bhavna, leaked = b_key.copy(), 0
+    bhavesh, leaked = b_key.copy(), 0
     if n < 2:
-        return bhavna, leaked
+        return bhavesh, leaked
 
     def mismatch(idx):
-        return (int(a_key[idx].sum()) + int(bhavna[idx].sum())) % 2 == 1
+        return (int(a_key[idx].sum()) + int(bhavesh[idx].sum())) % 2 == 1
 
     def bisect(idx):
         nonlocal leaked
@@ -246,7 +246,7 @@ def cascade(a_key, b_key, qber, rng, passes=6):
             half = idx[: len(idx) // 2]
             leaked += 1
             idx = half if mismatch(half) else idx[len(idx) // 2:]
-        bhavna[idx[0]] ^= 1
+        bhavesh[idx[0]] ^= 1
         return idx[0]
 
     block = int(min(max(4, round(0.73 / max(qber, 0.005))), max(2, n // 2)))
@@ -267,7 +267,7 @@ def cascade(a_key, b_key, qber, rng, passes=6):
                 if mismatch(blk):
                     queue.append(bisect(blk))
         block = min(block * 2, max(2, n // 2))
-    return bhavna, leaked
+    return bhavesh, leaked
 
 
 def toeplitz_hash(key, out_len, seed_bits):
@@ -441,7 +441,7 @@ def report(res, keys):
         return
     print(f"Cascade leak                  : {res['ec_leak_bits']} parity bits, residual errors {res['residual_errors']}")
     print(f"final secret key (Toeplitz)   : {res['final_key_bits']} bits = {res['secret_bits_per_qubit']:.3f} per qubit sent")
-    print(f"Arjun / Bhavna key fingerprints  : {fingerprint(keys[0])} / {fingerprint(keys[1])}   match = {res['keys_match']}")
+    print(f"Arjun / Bhavesh key fingerprints  : {fingerprint(keys[0])} / {fingerprint(keys[1])}   match = {res['keys_match']}")
 
 
 def main():
@@ -461,7 +461,7 @@ def main():
     args, _ = ap.parse_known_args()  # also works inside Jupyter / Colab
     os.makedirs(args.outdir, exist_ok=True)
 
-    print("\n=== Example round: Arjun sends |-> (bit 1, X basis), Esha probes, Bhavna measures in X ===")
+    print("\n=== Example round: Arjun sends |-> (bit 1, X basis), Esha probes, Bhavesh measures in X ===")
     print(bb84_round_circuit(1, X_BASIS, 1, 0, 0, X_BASIS).draw(output="text"))
 
     print(f"\n=== Run: {args.qubits} qubits | noise {args.noise} | loss {args.loss} | readout {args.readout} "
