@@ -2,7 +2,7 @@
 
 IBM Qiskit Fall Fest 2026, Track 7: Information-Theoretic Cybersecurity via BB84 QKD.
 
-Author: Sandeep S (Team Member)
+Author: Sandeep S
 
 ## Problem statement
 
