@@ -98,4 +98,4 @@ ML-KEM is not executed or benchmarked in this repository; its figures are the pu
 
 ### Templates and acknowledgements
 
-No external code template or notebook was copied. The code and slides were written for this submission with AI assistance (Claude, Anthropic).
+No external code template or notebook was copied. Part of the code  was written for this submission with AI assistance (Claude, Anthropic).
